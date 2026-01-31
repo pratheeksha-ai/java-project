@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Library</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-title">Library Management System</div>
+  </header>
+  <main class="container grid">
+    <aside class="panel">
+      <h3>Add Book</h3>
+      <input id="bookTitle" placeholder="Title">
+      <input id="bookAuthor" placeholder="Author">
+      <input id="bookIsbn" placeholder="ISBN">
+      <button id="addBook" class="primary">Add Book</button>
+
+      <h3 style="margin-top:18px;">Add Member</h3>
+      <input id="memberName" placeholder="Name">
+      <input id="memberId" placeholder="Member ID">
+      <input id="memberEmail" placeholder="Email">
+      <button id="addMember" class="primary">Add Member</button>
+
+      <h3 style="margin-top:18px;">Borrow / Return</h3>
+      <input id="actionIsbn" placeholder="ISBN">
+      <input id="actionMemberId" placeholder="Member ID (borrow)">
+      <div>
+        <button id="borrowBtn">Borrow</button>
+        <button id="returnBtn">Return</button>
+      </div>
+    </aside>
+
+    <section class="panel large">
+      <div id="notify" class="notify" style="opacity:0"></div>
+
+      <h2>Books</h2>
+      <table class="table">
+        <thead><tr><th>Title</th><th>Author</th><th>ISBN</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="books"></tbody>
+      </table>
+
+      <h2>Members</h2>
+      <table class="table">
+        <thead><tr><th>Name</th><th>Member ID</th><th>Email</th><th>Action</th></tr></thead>
+        <tbody id="members"></tbody>
+      </table>
+    </section>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
