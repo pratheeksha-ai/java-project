@@ -34,7 +34,7 @@ public class TestLibrary {
 
             // Return the book
             System.out.println("Returning ISBN-001...");
-            ops.returnBook("ISBN-001");
+            ops.returnBook("ISBN-001", "M001");
             System.out.println("Returned.");
 
             books = ops.getAllBooks();

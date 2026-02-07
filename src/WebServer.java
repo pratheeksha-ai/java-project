@@ -40,7 +40,7 @@ public class WebServer {
             }
 
             if (path.equals("/") || path.equals("")) {
-                serveFile(exchange, WEB_ROOT + "/index.html", "text/html");
+                serveFile(exchange, WEB_ROOT + "/home.html", "text/html");
             } else {
                 // serve static files
                 String filePath = WEB_ROOT + path.replace('/', '\\');
@@ -122,7 +122,7 @@ public class WebServer {
                 if (path.equals("/api/borrow") && method.equalsIgnoreCase("POST")) {
                     String body = readBody(exchange);
                     String isbn = parseField(body, "isbn");
-                    String memberId = parseField(body, "memberId");
+                    String memberId = parseField(body, "member_id");
                     if (isbn == null || memberId == null) {
                         sendResponse(exchange, 400, "{\"error\":\"missing fields\"}", "application/json");
                         return;
@@ -135,11 +135,12 @@ public class WebServer {
                 if (path.equals("/api/return") && method.equalsIgnoreCase("POST")) {
                     String body = readBody(exchange);
                     String isbn = parseField(body, "isbn");
-                    if (isbn == null) {
-                        sendResponse(exchange, 400, "{\"error\":\"missing isbn\"}", "application/json");
+                    String memberId = parseField(body, "member_id");
+                    if (isbn == null || memberId == null) {
+                        sendResponse(exchange, 400, "{\"error\":\"missing isbn or member_id\"}", "application/json");
                         return;
                     }
-                    ops.returnBook(isbn);
+                    ops.returnBook(isbn, memberId);
                     sendResponse(exchange, 200, "{\"status\":\"returned\"}", "application/json");
                     return;
                 }
@@ -165,6 +166,56 @@ public class WebServer {
                     }
                     ops.deleteMember(memberId);
                     sendResponse(exchange, 200, "{\"status\":\"deleted\"}", "application/json");
+                    return;
+                }
+
+                if (path.equals("/api/stats") && method.equalsIgnoreCase("GET")) {
+                    int totalBooks = ops.getTotalBooks();
+                    int availableBooks = ops.getAvailableBooks();
+                    int totalMembers = ops.getTotalMembers();
+                    String json = String.format("{\"totalBooks\":%d,\"availableBooks\":%d,\"totalMembers\":%d}", totalBooks, availableBooks, totalMembers);
+                    sendResponse(exchange, 200, json, "application/json");
+                    return;
+                }
+
+                if (path.equals("/api/transactions") && method.equalsIgnoreCase("GET")) {
+                    List<Transaction> transactions = ops.getAllTransactions();
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("[");
+                    for (int i = 0; i < transactions.size(); i++) {
+                        Transaction t = transactions.get(i);
+                        sb.append("{")
+                                .append("\"id\":").append(t.getId()).append(",")
+                                .append("\"isbn\":\"").append(escape(t.getIsbn())).append("\",")
+                                .append("\"memberId\":\"").append(escape(t.getMemberId())).append("\",")
+                                .append("\"borrowDate\":\"").append(t.getBorrowDate()).append("\",")
+                                .append("\"returnDate\":").append(t.getReturnDate() != null ? "\"" + t.getReturnDate() + "\"" : "null").append(",")
+                                .append("\"status\":\"").append(escape(t.getStatus())).append("\"")
+                                .append("}");
+                        if (i < transactions.size() - 1) sb.append(",");
+                    }
+                    sb.append("]");
+                    sendResponse(exchange, 200, sb.toString(), "application/json");
+                    return;
+                }
+
+                if (path.equals("/api/borrowed") && method.equalsIgnoreCase("GET")) {
+                    List<Transaction> borrowed = ops.getBorrowedBooks();
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("[");
+                    for (int i = 0; i < borrowed.size(); i++) {
+                        Transaction t = borrowed.get(i);
+                        sb.append("{")
+                                .append("\"id\":").append(t.getId()).append(",")
+                                .append("\"isbn\":\"").append(escape(t.getIsbn())).append("\",")
+                                .append("\"memberId\":\"").append(escape(t.getMemberId())).append("\",")
+                                .append("\"borrowDate\":\"").append(t.getBorrowDate()).append("\",")
+                                .append("\"status\":\"").append(escape(t.getStatus())).append("\"")
+                                .append("}");
+                        if (i < borrowed.size() - 1) sb.append(",");
+                    }
+                    sb.append("]");
+                    sendResponse(exchange, 200, sb.toString(), "application/json");
                     return;
                 }
 

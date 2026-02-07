@@ -86,4 +86,30 @@ public class BookDAO {
             throw new LibraryException("Error deleting book", e);
         }
     }
+
+    public int getTotalBooks() throws LibraryException {
+        String sql = "SELECT COUNT(*) FROM books";
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new LibraryException("Error counting books", e);
+        }
+        return 0;
+    }
+
+    public int getAvailableBooks() throws LibraryException {
+        String sql = "SELECT COUNT(*) FROM books WHERE is_available = true";
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new LibraryException("Error counting available books", e);
+        }
+        return 0;
+    }
 }

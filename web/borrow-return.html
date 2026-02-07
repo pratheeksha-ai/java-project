@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Borrow / Return Books - Library</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-title">Library Management System</div>
+</header>
+
+<main class="container">
+
+  <!-- Borrow / Return Panel -->
+  <div class="panel">
+    <h2>Borrow / Return Books</h2>
+    <div id="notify" class="notify" style="opacity:0"></div>
+
+    <!-- prevent form auto submit -->
+    <form id="borrowForm" onsubmit="return false;">
+      <input
+        id="actionIsbn"
+        placeholder="ISBN"
+        required
+      >
+      <input
+        id="actionMemberId"
+        placeholder="Member ID"
+        required
+      >
+
+      <div>
+        <button type="button" id="borrowBtn">Borrow</button>
+        <button type="button" id="returnBtn">Return</button>
+      </div>
+    </form>
+
+    <a href="/home.html" class="nav-link">Back to Home</a>
+  </div>
+
+</main>
+
+<script src="/common.js"></script>
+<script src="/borrow-return.js"></script>
+
+</body>
+</html>

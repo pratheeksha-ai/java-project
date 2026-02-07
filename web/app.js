@@ -106,7 +106,7 @@ document.getElementById('borrowBtn').addEventListener('click', async ()=>{
   const memberId = document.getElementById('actionMemberId').value.trim();
   if (!isbn || !memberId) { notify('Provide ISBN and Member ID', true); return; }
   try {
-    await apiFetch('/api/borrow', {method:'POST', body: JSON.stringify({isbn,memberId})});
+    await apiFetch('/api/borrow', {method:'POST', body: JSON.stringify({isbn, member_id: memberId})});
     notify('Book borrowed');
     load();
   } catch (err) { notify('Borrow failed: '+err.message, true); }
@@ -114,9 +114,10 @@ document.getElementById('borrowBtn').addEventListener('click', async ()=>{
 
 document.getElementById('returnBtn').addEventListener('click', async ()=>{
   const isbn = document.getElementById('actionIsbn').value.trim();
-  if (!isbn) { notify('Provide ISBN to return', true); return; }
+  const memberId = document.getElementById('actionMemberId').value.trim();
+  if (!isbn || !memberId) { notify('Provide ISBN and Member ID to return', true); return; }
   try {
-    await apiFetch('/api/return', {method:'POST', body: JSON.stringify({isbn})});
+    await apiFetch('/api/return', {method:'POST', body: JSON.stringify({isbn, member_id: memberId})});
     notify('Book returned');
     load();
   } catch (err) { notify('Return failed: '+err.message, true); }

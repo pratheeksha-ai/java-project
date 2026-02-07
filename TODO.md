@@ -1,0 +1,6 @@
+- [x] Update TransactionDAO.java: Add isBorrowedByMember method and modify updateReturnDate to include member_id
+- [x] Update LibraryOperations.java: Change returnBook to take memberId, add validation
+- [x] Update WebServer.java: Parse memberId for /api/return endpoint
+- [x] Update Main.java: Pass memberId to returnBook
+- [x] Update TestLibrary.java: Pass memberId to returnBook
+- [x] Test borrow and return functionality (compilation successful, logic fixed)

@@ -13,3 +13,13 @@ CREATE TABLE IF NOT EXISTS members (
     member_id VARCHAR(255) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL
 );
+CREATE TABLE IF NOT EXISTS transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    isbn VARCHAR(255) NOT NULL,
+    member_id VARCHAR(255) NOT NULL,
+    borrow_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    return_date DATETIME NULL,
+    status ENUM('borrowed', 'returned') DEFAULT 'borrowed',
+    FOREIGN KEY (isbn) REFERENCES books(isbn),
+    FOREIGN KEY (member_id) REFERENCES members(member_id)
+);

@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Add Member - Library</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-title">Library Management System</div>
+  </header>
+  <main class="container">
+    <div class="panel">
+      <h2>Add a New Member</h2>
+      <div id="notify" class="notify" style="opacity:0"></div>
+      <form id="addMemberForm">
+        <input id="memberName" placeholder="Name" required>
+        <input id="memberId" placeholder="Member ID" required>
+        <input id="memberEmail" placeholder="Email" required>
+        <button type="submit" class="primary">Add Member</button>
+      </form>
+    </div>
+    <div class="panel large">
+      <h2>Members</h2>
+      <table class="table">
+        <thead><tr><th>Name</th><th>Member ID</th><th>Email</th><th>Action</th></tr></thead>
+        <tbody id="members"></tbody>
+      </table>
+      <a href="/home.html" class="nav-link">Back to Home</a>
+    </div>
+  </main>
+  <script src="/common.js"></script>
+  <script src="/add-member.js"></script>
+</body>
+</html>

@@ -70,4 +70,17 @@ public class MemberDAO {
             throw new LibraryException("Error deleting member", e);
         }
     }
+
+    public int getTotalMembers() throws LibraryException {
+        String sql = "SELECT COUNT(*) FROM members";
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new LibraryException("Error counting members", e);
+        }
+        return 0;
+    }
 }

@@ -71,7 +71,9 @@ public class Main {
                     case 6:
                         System.out.print("Enter ISBN to return: ");
                         String returnIsbn = scanner.nextLine();
-                        libraryOps.returnBook(returnIsbn);
+                        System.out.print("Enter member ID: ");
+                        String returnMemberId = scanner.nextLine();
+                        libraryOps.returnBook(returnIsbn, returnMemberId);
                         System.out.println("Book returned successfully!");
                         break;
                     case 7:
