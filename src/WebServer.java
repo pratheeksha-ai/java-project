@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class WebServer {
-    private static final int PORT = 8080;
+    private static final int PORT = 8081;
     private static final String WEB_ROOT = "..\\web"; // relative to src
 
     public static void main(String[] args) throws Exception {
@@ -135,11 +135,12 @@ public class WebServer {
                 if (path.equals("/api/return") && method.equalsIgnoreCase("POST")) {
                     String body = readBody(exchange);
                     String isbn = parseField(body, "isbn");
-                    if (isbn == null) {
-                        sendResponse(exchange, 400, "{\"error\":\"missing isbn\"}", "application/json");
+                    String memberId = parseField(body, "memberId");
+                    if (isbn == null || memberId == null) {
+                        sendResponse(exchange, 400, "{\"error\":\"missing isbn or memberId\"}", "application/json");
                         return;
                     }
-                    ops.returnBook(isbn);
+                    ops.returnBook(isbn, memberId);
                     sendResponse(exchange, 200, "{\"status\":\"returned\"}", "application/json");
                     return;
                 }
@@ -165,6 +166,15 @@ public class WebServer {
                     }
                     ops.deleteMember(memberId);
                     sendResponse(exchange, 200, "{\"status\":\"deleted\"}", "application/json");
+                    return;
+                }
+
+                if (path.equals("/api/stats") && method.equalsIgnoreCase("GET")) {
+                    int totalBooks = ops.getTotalBooks();
+                    int availableBooks = ops.getAvailableBooks();
+                    int totalMembers = ops.getTotalMembers();
+                    String json = String.format("{\"totalBooks\":%d,\"availableBooks\":%d,\"totalMembers\":%d}", totalBooks, availableBooks, totalMembers);
+                    sendResponse(exchange, 200, json, "application/json");
                     return;
                 }
 

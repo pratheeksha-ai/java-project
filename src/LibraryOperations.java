@@ -5,6 +5,7 @@ public class LibraryOperations {
     private Connection connection;
     private BookDAO bookDao;
     private MemberDAO memberDao;
+    private TransactionDAO transactionDao;
 
     public LibraryOperations() throws LibraryException {
         this.connection = DBConnection.getConnection();
@@ -13,6 +14,7 @@ public class LibraryOperations {
         }
         this.bookDao = new BookDAO(this.connection);
         this.memberDao = new MemberDAO(this.connection);
+        this.transactionDao = new TransactionDAO(this.connection);
     }
 
     public void addBook(Book book) throws LibraryException {
@@ -39,9 +41,11 @@ public class LibraryOperations {
             throw new LibraryException("Book is not available");
         }
         bookDao.setAvailability(isbn, false);
+        transactionDao.addTransaction(new Transaction(isbn, memberId));
     }
 
-    public void returnBook(String isbn) throws LibraryException {
+    public void returnBook(String isbn, String memberId) throws LibraryException {
+        transactionDao.returnBook(isbn, memberId);
         bookDao.setAvailability(isbn, true);
     }
 
@@ -51,5 +55,17 @@ public class LibraryOperations {
 
     public void deleteMember(String memberId) throws LibraryException {
         memberDao.deleteMember(memberId);
+    }
+
+    public int getTotalBooks() throws LibraryException {
+        return bookDao.getTotalBooks();
+    }
+
+    public int getAvailableBooks() throws LibraryException {
+        return bookDao.getAvailableBooks();
+    }
+
+    public int getTotalMembers() throws LibraryException {
+        return memberDao.getTotalMembers();
     }
 }

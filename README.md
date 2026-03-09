@@ -53,7 +53,7 @@ cd src
 java -cp ".;../lib/mysql-connector-j-9.6.0.jar;." WebServer
 ```
 
-Then open: **http://localhost:8080**
+Then open: **http://localhost:8081**
 
 ### Run CLI
 

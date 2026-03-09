@@ -3,7 +3,17 @@ public class Member {
     private String memberId;
     private String email;
 
-    public Member(String name, String memberId, String email) {
+    public Member(String name, String memberId, String email) throws LibraryException {
+        // Validate memberId - must be numeric only
+        if (memberId == null || !memberId.matches("^\\d+$")) {
+            throw new LibraryException("Member ID must contain only numbers");
+        }
+        
+        // Validate email format
+        if (email == null || !email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            throw new LibraryException("Invalid email format");
+        }
+        
         this.name = name;
         this.memberId = memberId;
         this.email = email;

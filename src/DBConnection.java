@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class DBConnection {
     private static Connection connection = null;
-    public static Connection getConnection() {
+    public static Connection getConnection() throws LibraryException {
         // simple singleton connection
         try {
             if (connection != null && !connection.isClosed()) {
@@ -21,17 +21,19 @@ public class DBConnection {
 
             connection = DriverManager.getConnection(url, user, pass);
             System.out.println("Database connected successfully to: " + url);
+            return connection;
         } catch (ClassNotFoundException e) {
-            System.err.println("MySQL JDBC Driver not found. Add the connector jar to classpath.");
-            e.printStackTrace();
+            throw new LibraryException("MySQL JDBC Driver not found. Add the connector jar to classpath.", e);
         } catch (SQLException e) {
-            System.err.println("Failed to connect to database:");
-            e.printStackTrace();
+            throw new LibraryException("Failed to connect to database: " + e.getMessage(), e);
         }
-        return connection;
     }
 
     public static void main(String[] args) {
-        getConnection();
+        try {
+            getConnection();
+        } catch (LibraryException e) {
+            System.err.println("Error: " + e.getMessage());
+        }
     }
 }

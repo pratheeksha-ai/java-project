@@ -9,8 +9,8 @@ if %errorlevel% neq 0 (
   exit /b 1
 )
 echo Starting Library Management System...
-echo Opening browser to http://localhost:8080
+echo Opening browser to http://localhost:8081
 timeout /t 2
-start http://localhost:8080
+start http://localhost:8081
 java -cp ".;../lib/mysql-connector-j-9.6.0.jar" WebServer
 pause

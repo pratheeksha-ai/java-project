@@ -24,12 +24,15 @@ async function load() {
   try {
     const books = await apiFetch('/api/books', {method:'GET'});
     const members = await apiFetch('/api/members', {method:'GET'});
+    const stats = await apiFetch('/api/stats', {method:'GET'});
 
     const booksTbl = document.getElementById('books');
     booksTbl.innerHTML = '';
     books.forEach(b => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${escapeHtml(b.title)}</td><td>${escapeHtml(b.author)}</td><td>${escapeHtml(b.isbn)}</td><td>${b.isAvailable ? 'Available' : 'Borrowed'}</td><td><button class="delete-btn" data-isbn="${escapeHtml(b.isbn)}">Delete</button></td>`;
+      const statusClass = b.isAvailable ? 'status-available' : 'status-borrowed';
+      const statusText = b.isAvailable ? 'Available' : 'Borrowed';
+      tr.innerHTML = `<td>${escapeHtml(b.title)}</td><td>${escapeHtml(b.author)}</td><td>${escapeHtml(b.isbn)}</td><td><span class="${statusClass}">${statusText}</span></td><td><button class="delete-btn" data-isbn="${escapeHtml(b.isbn)}">Delete</button></td>`;
       booksTbl.appendChild(tr);
     });
 
@@ -68,6 +71,11 @@ async function load() {
         }
       });
     });
+
+    // update stats
+    document.getElementById('totalBooks').textContent = 'Total Books: ' + stats.totalBooks;
+    document.getElementById('availableBooks').textContent = 'Available Books: ' + stats.availableBooks;
+    document.getElementById('totalMembers').textContent = 'Total Members: ' + stats.totalMembers;
   } catch (err) {
     notify('Load failed: ' + err.message, true);
   }
@@ -92,6 +100,19 @@ document.getElementById('addMember').addEventListener('click', async ()=>{
   const name = document.getElementById('memberName').value.trim();
   const memberId = document.getElementById('memberId').value.trim();
   const email = document.getElementById('memberEmail').value.trim();
+  
+  // Validate memberId - must be numeric only
+  if (!memberId || !/^\d+$/.test(memberId)) {
+    notify('Member ID must contain only numbers', true);
+    return;
+  }
+  
+  // Validate email format
+  if (!email || !/^[A-Za-z0-9+_.-]+@(.+)$/.test(email)) {
+    notify('Please enter a valid email address', true);
+    return;
+  }
+  
   if (!name || !memberId || !email) { notify('Please provide name, id and email', true); return; }
   try {
     await apiFetch('/api/members', {method:'POST', body: JSON.stringify({name,memberId,email})});
@@ -114,9 +135,10 @@ document.getElementById('borrowBtn').addEventListener('click', async ()=>{
 
 document.getElementById('returnBtn').addEventListener('click', async ()=>{
   const isbn = document.getElementById('actionIsbn').value.trim();
-  if (!isbn) { notify('Provide ISBN to return', true); return; }
+  const memberId = document.getElementById('actionMemberId').value.trim();
+  if (!isbn || !memberId) { notify('Provide ISBN and Member ID to return', true); return; }
   try {
-    await apiFetch('/api/return', {method:'POST', body: JSON.stringify({isbn})});
+    await apiFetch('/api/return', {method:'POST', body: JSON.stringify({isbn, memberId})});
     notify('Book returned');
     load();
   } catch (err) { notify('Return failed: '+err.message, true); }
