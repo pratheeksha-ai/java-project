@@ -27,7 +27,6 @@ public class BookDAO {
             throw new LibraryException("Error adding book", e);
         }
     }
-
     public List<Book> getAllBooks() throws LibraryException {
         List<Book> books = new ArrayList<>();
         String sql = "SELECT * FROM books";
@@ -43,7 +42,7 @@ public class BookDAO {
         }
         return books;
     }
-
+    
     public boolean isBookAvailable(String isbn) throws LibraryException {
         String sql = "SELECT is_available FROM books WHERE isbn = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {

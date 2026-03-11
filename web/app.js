@@ -107,8 +107,8 @@ document.getElementById('addMember').addEventListener('click', async ()=>{
     return;
   }
   
-  // Validate email format
-  if (!email || !/^[A-Za-z0-9+_.-]+@(.+)$/.test(email)) {
+  // Validate email format - more strict standard regex
+  if (!email || !/^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email)) {
     notify('Please enter a valid email address', true);
     return;
   }

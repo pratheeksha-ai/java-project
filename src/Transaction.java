@@ -14,7 +14,6 @@ public class Transaction {
         this.returnDate = null;
     }
 
-    // Constructor for existing transactions
     public Transaction(int id, String isbn, String memberId, Timestamp borrowDate, Timestamp returnDate) {
         this.id = id;
         this.isbn = isbn;

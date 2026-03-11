@@ -37,7 +37,7 @@ public class MemberDAO {
         try (PreparedStatement stmt = connection.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                Member member = new Member(rs.getString("name"), rs.getString("member_id"), rs.getString("email"));
+                Member member = new Member(rs.getString("name"), rs.getString("member_id"), rs.getString("email"), true);
                 members.add(member);
             }
         } catch (SQLException e) {

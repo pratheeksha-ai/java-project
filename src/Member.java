@@ -4,16 +4,20 @@ public class Member {
     private String email;
 
     public Member(String name, String memberId, String email) throws LibraryException {
-        // Validate memberId - must be numeric only
         if (memberId == null || !memberId.matches("^\\d+$")) {
             throw new LibraryException("Member ID must contain only numbers");
         }
         
-        // Validate email format
-        if (email == null || !email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+        if (email == null || !email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
             throw new LibraryException("Invalid email format");
         }
         
+        this.name = name;
+        this.memberId = memberId;
+        this.email = email;
+    }
+
+    Member(String name, String memberId, String email, boolean skipValidation) {
         this.name = name;
         this.memberId = memberId;
         this.email = email;

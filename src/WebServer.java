@@ -6,6 +6,8 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.List;
 
 public class WebServer {
@@ -13,18 +15,58 @@ public class WebServer {
     private static final String WEB_ROOT = "..\\web"; // relative to src
 
     public static void main(String[] args) throws Exception {
+        initializeDatabase();
+        
         HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
         server.createContext("/", new RootHandler());
         server.setExecutor(null);
         System.out.println("Starting web server at http://localhost:" + PORT);
         server.start();
     }
+    
+    private static void initializeDatabase() {
+        try {
+            Connection conn = DBConnection.getConnection();
+            System.out.println("Initializing database tables...");
+            
+            String createBooksTable = "CREATE TABLE IF NOT EXISTS books (" +
+                "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                "title VARCHAR(255), " +
+                "author VARCHAR(255), " +
+                "isbn VARCHAR(255) UNIQUE NOT NULL, " +
+                "is_available BOOLEAN DEFAULT TRUE)";
+            
+            String createMembersTable = "CREATE TABLE IF NOT EXISTS members (" +
+                "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                "name VARCHAR(255), " +
+                "member_id VARCHAR(255) UNIQUE NOT NULL, " +
+                "email VARCHAR(255) UNIQUE NOT NULL)";
+            
+            String createTransactionsTable = "CREATE TABLE IF NOT EXISTS transactions (" +
+                "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                "isbn VARCHAR(255) NOT NULL, " +
+                "member_id VARCHAR(255) NOT NULL, " +
+                "borrow_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                "return_date TIMESTAMP NULL)";
+            
+            try (Statement stmt = conn.createStatement()) {
+                stmt.execute(createBooksTable);
+                System.out.println("Books table ready");
+                stmt.execute(createMembersTable);
+                System.out.println("Members table ready");
+                stmt.execute(createTransactionsTable);
+                System.out.println("Transactions table ready");
+            }
+            System.out.println("Database initialization complete");
+        } catch (Exception e) {
+            System.err.println("Warning: Could not initialize database: " + e.getMessage());
+        }
+    }
 
     static class RootHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String path = exchange.getRequestURI().getPath();
-            // handle CORS preflight
             if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
                 exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
                 exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -32,7 +74,6 @@ public class WebServer {
                 exchange.sendResponseHeaders(204, -1);
                 return;
             }
-            // add permissive CORS for browser frontend
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             if (path.startsWith("/api/")) {
                 handleApi(exchange, path);
@@ -180,9 +221,20 @@ public class WebServer {
 
                 sendResponse(exchange, 404, "{\"error\":\"not found\"}", "application/json");
             } catch (LibraryException e) {
-                sendResponse(exchange, 500, "{\"error\":\"" + escape(e.getMessage()) + "\"}", "application/json");
+                // Log the error for debugging
+                System.err.println("LibraryException: " + e.getMessage());
+                e.printStackTrace();
+                // Return 400 for validation errors, 500 for other errors
+                String errorMsg = e.getMessage();
+                if (errorMsg != null && (errorMsg.contains("Invalid") || errorMsg.contains("must") || errorMsg.contains("already"))) {
+                    sendResponse(exchange, 400, "{\"error\":\"" + escape(errorMsg) + "\"}", "application/json");
+                } else {
+                    sendResponse(exchange, 500, "{\"error\":\"" + escape(errorMsg) + "\"}", "application/json");
+                }
             } catch (Exception ex) {
-                sendResponse(exchange, 500, "{\"error\":\"internal error\"}", "application/json");
+                System.err.println("Exception: " + ex.getMessage());
+                ex.printStackTrace();
+                sendResponse(exchange, 500, "{\"error\":\"internal error: " + escape(ex.getMessage()) + "\"}", "application/json");
             }
         }
 
