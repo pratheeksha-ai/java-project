@@ -1,14 +1,13 @@
-# TODO: Fix Data Storage and Input Validation
+# TODO - Fix Email Validation Issue
 
-## Tasks
-- [x] Fix DBConnection.java error handling (propagate exceptions instead of returning null)
-- [x] Update Member.java to validate memberId (numbers only)
-- [x] Update web/app.js to validate memberId (numbers only) and email format
-- [x] Compile and test the application
+## Task
+Fix "Load failed: Invalid email format" error and ensure data is properly stored.
 
-## Notes
-- DBConnection was silently catching exceptions and returning null
-- Member ID should only accept numeric values
-- Email should be validated for proper format
-- Duplicate prevention already exists in DAO layer
+## Steps to Completed:
+- [x] 1. Update Member.java - Fix email validation regex + add constructor without validation for DB retrieval
+- [x] 2. Update MemberDAO.java - Use constructor without validation for database retrieval
+- [x] 3. Update app.js - Match the same strict regex on client side
+- [x] 4. Update WebServer.java - Improve error handling to properly propagate error messages
+
+## Status: Completed
 
