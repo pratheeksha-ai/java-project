@@ -15,7 +15,6 @@ public class WebServer {
     private static final String WEB_ROOT = "..\\web"; // relative to src
 
     public static void main(String[] args) throws Exception {
-        // Initialize database tables
         initializeDatabase();
         
         HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
@@ -30,7 +29,6 @@ public class WebServer {
             Connection conn = DBConnection.getConnection();
             System.out.println("Initializing database tables...");
             
-            // Create books table if not exists
             String createBooksTable = "CREATE TABLE IF NOT EXISTS books (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY, " +
                 "title VARCHAR(255), " +
@@ -38,14 +36,12 @@ public class WebServer {
                 "isbn VARCHAR(255) UNIQUE NOT NULL, " +
                 "is_available BOOLEAN DEFAULT TRUE)";
             
-            // Create members table if not exists
             String createMembersTable = "CREATE TABLE IF NOT EXISTS members (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY, " +
                 "name VARCHAR(255), " +
                 "member_id VARCHAR(255) UNIQUE NOT NULL, " +
                 "email VARCHAR(255) UNIQUE NOT NULL)";
             
-            // Create transactions table if not exists
             String createTransactionsTable = "CREATE TABLE IF NOT EXISTS transactions (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY, " +
                 "isbn VARCHAR(255) NOT NULL, " +
@@ -71,7 +67,6 @@ public class WebServer {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String path = exchange.getRequestURI().getPath();
-            // handle CORS preflight
             if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
                 exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
                 exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -79,7 +74,6 @@ public class WebServer {
                 exchange.sendResponseHeaders(204, -1);
                 return;
             }
-            // add permissive CORS for browser frontend
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             if (path.startsWith("/api/")) {
                 handleApi(exchange, path);
