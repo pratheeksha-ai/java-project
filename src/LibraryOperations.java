@@ -50,11 +50,35 @@ public class LibraryOperations {
     }
 
     public void deleteBook(String isbn) throws LibraryException {
-        bookDao.deleteBook(isbn);
+        // Check for active transactions before deletion
+        if (transactionDao.hasActiveTransaction(isbn)) {
+            // Book has active borrowings - will be deleted along with transactions due to CASCADE
+            // Proceeding with deletion including all transaction history
+        }
+        try {
+            // With ON DELETE CASCADE, transactions will be automatically deleted
+            // when the book is deleted. This also handles books that were borrowed and returned.
+            transactionDao.deleteTransactionsByISBN(isbn);
+            bookDao.deleteBook(isbn);
+        } catch (Exception e) {
+            throw new LibraryException("Error deleting book: " + e.getMessage());
+        }
     }
 
     public void deleteMember(String memberId) throws LibraryException {
-        memberDao.deleteMember(memberId);
+        // Check for active transactions before deletion
+        if (transactionDao.memberHasActiveTransactions(memberId)) {
+            // Member has active borrowings - will be deleted along with transactions due to CASCADE
+            // Proceeding with deletion including all transaction history
+        }
+        try {
+            // With ON DELETE CASCADE, transactions will be automatically deleted
+            // when the member is deleted. This also handles members who have returned books.
+            transactionDao.deleteTransactionsByMemberId(memberId);
+            memberDao.deleteMember(memberId);
+        } catch (Exception e) {
+            throw new LibraryException("Error deleting member: " + e.getMessage());
+        }
     }
 
     public int getTotalBooks() throws LibraryException {

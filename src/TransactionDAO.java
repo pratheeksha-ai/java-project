@@ -78,4 +78,48 @@ public class TransactionDAO {
         }
         return transactions;
     }
+
+    public boolean hasActiveTransaction(String isbn) throws LibraryException {
+        String sql = "SELECT id FROM transactions WHERE isbn = ? AND return_date IS NULL";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, isbn);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new LibraryException("Error checking active transaction", e);
+        }
+    }
+
+    public boolean memberHasActiveTransactions(String memberId) throws LibraryException {
+        String sql = "SELECT id FROM transactions WHERE member_id = ? AND return_date IS NULL";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, memberId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new LibraryException("Error checking member transactions", e);
+        }
+    }
+
+    public void deleteTransactionsByISBN(String isbn) throws LibraryException {
+        String sql = "DELETE FROM transactions WHERE isbn = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, isbn);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new LibraryException("Error deleting transactions for book", e);
+        }
+    }
+
+    public void deleteTransactionsByMemberId(String memberId) throws LibraryException {
+        String sql = "DELETE FROM transactions WHERE member_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, memberId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new LibraryException("Error deleting transactions for member", e);
+        }
+    }
 }

@@ -27,6 +27,6 @@ CREATE TABLE IF NOT EXISTS transactions (
     member_id VARCHAR(255) NOT NULL,
     borrow_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     return_date TIMESTAMP NULL,
-    FOREIGN KEY (isbn) REFERENCES books(isbn),
-    FOREIGN KEY (member_id) REFERENCES members(member_id)
+    FOREIGN KEY (isbn) REFERENCES books(isbn) ON DELETE CASCADE,
+    FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE
 );

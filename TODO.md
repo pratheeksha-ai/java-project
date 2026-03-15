@@ -1,13 +1,12 @@
-# TODO - Fix Email Validation Issue
+# Database Connection Fix - Progress Tracker
 
-## Task
-Fix "Load failed: Invalid email format" error and ensure data is properly stored.
+## Completed (4/6)
+- [x] **Updated DBConnection.java** - Changed root password from "password" to "Nns22bc030@
 
-## Steps to Completed:
-- [x] 1. Update Member.java - Fix email validation regex + add constructor without validation for DB retrieval
-- [x] 2. Update MemberDAO.java - Use constructor without validation for database retrieval
-- [x] 3. Update app.js - Match the same strict regex on client side
-- [x] 4. Update WebServer.java - Improve error handling to properly propagate error messages
+- [ ] Terminate hanging mysql terminal  
+- [ ] Create database library_db using create_db.sql
+- [ ] Recompile Java files
+- [ ] Start server with run.bat and verify connection
+- [ ] Test http://localhost:8081/api/stats (should connect successfully)
 
-## Status: Completed
-
+**Next step:** Kill processes and create database.
